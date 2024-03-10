@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+
+  endpoint-svc:
+    image: mahmoud2023/endpoint-svc:latest
+    build:
+      context: ./backend
+      dockerfile: ShopSync.Endpoint/Dockerfile.dev
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 5000:80
+
+
+  # API service
+  # api:
+  #   image: api-sv
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=https://+:443;http://+:80
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.dev
+  #   volumes:
+  #     - ./ShopSync.Endpoint:/app
+  #     - ~/.aspnet/https:/https:ro
+  #   ports:
+  #     - 5000:80
+  #     - 5001:443
+  #   command: ["dotnet", "watch","run", "-v", "--urls", "http://+:80"]
