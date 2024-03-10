@@ -1,44 +1,70 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using ShopSync.Domain.Contracts;
+using ShopSync.Infrastructure.Database;
+using ShopSync.Infrastructure.Database.Seeds;
+using ShopSync.Infrastructure.Mapper;
+using ShopSync.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// ===================Services Configs===================
+builder.Services.AddControllers();
+
+#region Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+#endregion
 
+#region Connection String
+var connectionString = builder.Configuration.GetConnectionString("ApplicationConnection");
+
+builder.Services.AddDbContext<ApplicationContext>(options =>
+options.UseSqlServer(connectionString));
+#endregion
+
+#region AutoMapper Configs
+builder.Services.AddSingleton<IMapper>(sp => new Mapper(new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile<DomainProfile>();
+})));
+#endregion
+
+#region UnitOfWork Configs
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+#endregion
+
+#region Repositories Configs
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+#endregion
+
+// ===================Middlwares Configs===================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+#endregion
 
-app.UseHttpsRedirection();
+app.MapControllers();
 
-var summaries = new[]
+#region Seeds
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+try
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    context.Database.Migrate();
+    DbInitializer.Initialize(context);
+}
+catch (Exception ex)
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    logger.LogError(ex, "A propblem occurred during migration");
+}
+
+#endregion
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

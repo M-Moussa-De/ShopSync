@@ -6,8 +6,8 @@ This project is a multi vendors e-commerce store built with a variety of modern 
 
 - Vendors can signup and signin thats how they gain access to Vendors-Dashboard, where they can add, update, and delete their products.
 
-- Users can add products to their cart and place an order. Users can also search for products, filter products by category and price, sort products by price and rating, review and rate products, add products to their wishlist, and checkout their cart. Users can also pay for their orders using Stripe. Users receive an email after placing an order. The application logs are stored in a file. Products are paginated and cached in Redis to improve performance. Admins can manage users and vendors. They can also view orders and products. Users can sign up using social media accounts like Google or Facebook in addition to the traditional email and password. 
-Users can sign in, and sign out. Users can also reset their password if they forget it. Users can only access certain parts of the application if they are authorized to do so.
+- Users can add products to their cart and place an order. Users can also search for products, filter products by category and price, sort products by price and rating, review and rate products, add products to their wishlist, and checkout their cart. Users can also pay for their orders using Stripe. Users receive an email after placing an order. The application logs are stored in a file. Products are paginated and cached in Redis to improve performance. Admins can manage users and vendors. They can also view orders and products. Users can sign up using social media accounts like Google or Facebook in addition to the traditional email and password.
+  Users can sign in, and sign out. Users can also reset their password if they forget it. Users can only access certain parts of the application if they are authorized to do so.
 
 - Admin can manage users and vendors. They can view orders and products.
 
@@ -50,13 +50,17 @@ Users can sign in, and sign out. Users can also reset their password if they for
 
 **Architecture**
 
-- Onion/Clean Arcture (Infrastrucutre, Core, Application, Presentation)
-- Domain-Driven Design (DDD)
-<!-- - Test-Driven Development (TDD) -->
+- Onion/Clean Architecture (Domain, Infrastructure, Application, Endpoint)
+- Test-Driven Development (TDD)
+
+**Patterns**
+
+- Repository
+- Unit of work (Transaction)
 
 **Database**
 
-- SQL Server
+- MS SQLServer
 
 **In Memory Cache**
 
@@ -68,6 +72,7 @@ Users can sign in, and sign out. Users can also reset their password if they for
 
 **DevOps**
 
+- Git
 - GitHub
 - Docker
 - Docker Compose
